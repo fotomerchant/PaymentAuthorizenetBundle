@@ -1,5 +1,5 @@
 {
-    "name": "fotomerchant/payment-authorizenet-bundle",
+    "name": "fm/payment-authorizenet-bundle",
     "type": "symfony-bundle",
     "description": "A Symfony2 Bundle that provides access to the Authorize.net API. Based on JMSPaymentCoreBundle.",
     "keywords": ["payment", "authorize.net"],
