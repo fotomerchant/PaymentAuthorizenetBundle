@@ -19,9 +19,6 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('api_key')
-                    ->defaultNull()
-                ->end()
                 ->scalarNode('processes_type')
                     ->defaultValue('authorizenet_checkout')
                 ->end()
@@ -36,10 +33,6 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue([])
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('api_key')
-                                ->isRequired()
-                                ->cannotBeEmpty()
-                            ->end()
                             ->scalarNode('processes_type')
                                 ->isRequired()
                                 ->cannotBeEmpty()
