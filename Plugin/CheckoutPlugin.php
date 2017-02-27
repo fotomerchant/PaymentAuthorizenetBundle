@@ -149,14 +149,20 @@ class CheckoutPlugin extends AbstractPlugin
     {
         $data = $response->getData();
 
-        $errorDetails = (array) $data->transactionResponse->errors->error;
+        if(isset($data->transactionResponse->errors->error)) {
+            $errorCode = (string) $data->transactionResponse->errors->error->errorCode;
+            $errorText = (string) $data->transactionResponse->errors->error->errorText;
+        } else {
+            $errorCode = (string) $data->messages->message->code;
+            $errorText = (string) $data->messages->message->text;
+        }
 
-        $ex = new FinancialException($data->transactionResponse->errors->error->errorText);
-        $ex->addProperty('error', $errorDetails['errorCode'].": ".$errorDetails['errorText']);
+        $ex = new FinancialException($errorCode.': '.$errorText);
+        $ex->addProperty('error', $errorCode.': '.$errorText);
         $ex->setFinancialTransaction($transaction);
 
         $transaction->setResponseCode('FAILED');
-        $transaction->setReasonCode($errorDetails['errorCode'].": ".$errorDetails['errorText']);
+        $transaction->setReasonCode($errorCode.': '.$errorText);
         $transaction->setState(FinancialTransactionInterface::STATE_FAILED);
 
         return $ex;
