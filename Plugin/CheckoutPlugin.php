@@ -2,6 +2,7 @@
 
 namespace FM\Payment\AuthorizenetBundle\Plugin;
 
+use JMS\Payment\CoreBundle\Entity\ExtendedData;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 use JMS\Payment\CoreBundle\Plugin\AbstractPlugin;
 use JMS\Payment\CoreBundle\Plugin\Exception\FinancialException;
@@ -65,6 +66,9 @@ class CheckoutPlugin extends AbstractPlugin
             $this->logger->info(json_encode($requestData));
             $this->logger->info(json_encode($data));
         }
+
+        $transactionData = $this->buildTransactionData($response->getData()->transactionResponse);
+        $transaction->setExtendedData($transactionData);
 
         if ($response->isSuccessful()) {
             $transaction->setProcessedAmount($transaction->getRequestedAmount());
@@ -137,6 +141,36 @@ class CheckoutPlugin extends AbstractPlugin
         ];
 
         return $parameters;
+    }
+
+    public function buildTransactionData($attributes, ExtendedData $transactionData = null)
+    {
+        if (! $transactionData) {
+            $transactionData = new ExtendedData();
+        }
+
+        foreach ((array) $attributes as $key => $value) {
+            $transactionData->set($key, $this->handleDataValue($value), false);
+        }
+
+        return $transactionData;
+    }
+
+    private function handleDataValue($value)
+    {
+        if ($value instanceof \SimpleXMLElement) {
+            $workingValue = (array) $value;
+        } else {
+            $workingValue = $value;
+        }
+
+        if (is_array($workingValue)) {
+            foreach ($workingValue as $key => $subWorkingValue) {
+                $workingValue[$key] = $this->handleDataValue($subWorkingValue);
+            }
+        }
+
+        return $workingValue;
     }
 
     /**
