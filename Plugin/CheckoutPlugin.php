@@ -134,6 +134,8 @@ class CheckoutPlugin extends AbstractPlugin
             'duplicateWindow' => $data->get('duplicateWindow'),
             'invoiceNumber' => $data->get('invoiceNumber'),
             'developerMode' => $data->get('developerMode'),
+            'customerBilling' => $data->get('customerBilling'),
+            'customerShipping' => $data->get('customerShipping')
         ];
 
         return $parameters;
